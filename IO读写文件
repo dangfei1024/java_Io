@@ -1,0 +1,62 @@
+public class test01 {
+    public static void main(String[] args) throws Exception {
+
+        String inptuFilePath = "D:\\测试读取文件.txt";
+        //读取数据
+        List list = inputStream(inptuFilePath);
+        //写入数据
+        String outputFilePath = "D:\\测试写入文件 .txt";
+        outputStream(outputFilePath,list);
+    }
+//写数据
+    private static void outputStream(String outputFilePath,List list ) throws Exception {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath));
+        String data = "";
+        for (int i = 0; i <list.size() ; i+=2) {
+
+            if(i>=list.size()){
+                return;
+            }
+            data = list.get(i)+":"+list.get(i+1);
+            writer.write(data + "\r\n");
+        }
+        writer.close();
+        System.out.println("写入成功");
+    }
+
+//读数据
+    private static List inputStream( String inptuFilePath) throws Exception {
+        FileInputStream fis=new FileInputStream(inptuFilePath);
+        InputStreamReader isr=new InputStreamReader(fis, "UTF-8");
+        BufferedReader br = new BufferedReader(isr);
+        String line="";
+        List<String> list = new ArrayList<>();
+        Map<String,String> map  = new HashMap<>();
+        while ((line=br.readLine())!=null) {
+            String stingNoReplacemk=  line.replaceAll("},", "");
+            String stingNoReplacemo=  stingNoReplacemk.replaceAll("}", "");
+            String stingNoReplaced=  stingNoReplacemo.replaceAll("，", "");
+            String stingNoReplacem=  stingNoReplaced.replaceAll("'", "");
+            String stingNoReplacqq=  stingNoReplacem.replaceAll("\\s*", ""); //可以替换大部分空白字符， 不限于空格 ；
+            boolean fig = true;
+            for(int i=0;i<stingNoReplacqq.length();i++){
+                char ch = stingNoReplacqq.charAt(i);
+                if(" {".equals(ch) || "}，".equals(ch) || "}".equals(ch) || ch == 123){
+                    fig = false;
+                }
+            }
+            if(fig){
+                String[] split = stingNoReplacqq.split(":");
+                for (int i = 0; i <split.length ; i++) {
+                    if(split[i] ==null || split[i].equals("") || split[i].equals(" ")){
+                    }else {
+                        list.add(split[i]);
+                    }
+                }
+            }
+        }
+        br.close();
+        isr.close();
+        fis.close();
+        return list;
+    }
