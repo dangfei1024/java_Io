@@ -1,0 +1,65 @@
+
+
+FileUtils.copyInputStreamToFile(contractFileInputStream,new File("C:\\Users\\V007\\Desktop\\a.docx"));
+
+
+try (PDDocument pdDocument = PDDocument.load(new FileInputStream(new File("C:\\Users\\V007\\Desktop\\《绿地香港佛山阳光花园0612地块3期3钢筋货物供应合同》
+
+	
+		Pattern patternNum = Pattern.compile("<br/>[\\d]{1,2}<br/>");
+		Matcher matcherNum = patternNum.matcher(pmtMethod);
+		pmtMethod=matcherNum.replaceAll("");
+		
+private String nullToEmpty(String str) {
+		if(StringUtil.isBlank(str)) {
+			return "";
+		}
+		return str;
+	}
+archaius
+
+
+}
+		//分页
+		int pageSize = productTenderInfoService.getTenderListPageSize();
+		outputBean.setPageSize(pageSize);
+		outputBean.setTotalCount(pdTenderInfo.size());
+		// 计算开始数
+		Integer pageNum = null == reqParams.getPageIndex() ? 1
+				: reqParams.getPageIndex();
+		int fromIndex = (pageNum - 1) * pageSize;
+		int toIndex = pageNum * pageSize;
+		toIndex = toIndex > pdTenderInfo.size() ? pdTenderInfo.size() : toIndex;
+		outputBean.setTenderList(bulidTenders(fromIndex, toIndex, pdTenderInfo));
+			/**
+	 * 分页
+	 */
+	private List<TenderInfoBean> bulidTenders(int fromIndex, int toIndex, List<TenderInfoBean> pdTenderInfo) {
+		List<TenderInfoBean> pdTenderList = new ArrayList<>();
+		for (int index = fromIndex; index < toIndex; index++) {
+			pdTenderList.add(pdTenderInfo.get(index));
+		}
+		return pdTenderList;
+	}
+	
+	
+	private void sortData(List<TenderSupplierInfoBean> tenderSupplierList, String sort) {
+		if (StringUtil.isBlank(sort)) {
+			return ;
+		}
+		if (TransConstant.STR_ONE.equals(sort)) {// 1升序
+			tenderSupplierList.sort((TenderSupplierInfoBean h1, TenderSupplierInfoBean h2) -> h1.getReplyEndDt()
+					.compareTo(h2.getReplyEndDt()));
+		} else if (TransConstant.STR_TWO.equals(sort)) {// 2降序
+			tenderSupplierList.sort((TenderSupplierInfoBean h1, TenderSupplierInfoBean h2) -> h2.getReplyEndDt()
+					.compareTo(h1.getReplyEndDt()));
+		}
+	}
+	yibu
+new EventThreadHandler().execute(new IEventTask() {
+
+			@Override
+			public void run() {
+				updateProdSaleCount(skuSaleList, acctId);
+			}
+		});
