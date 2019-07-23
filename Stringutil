@@ -1,0 +1,300 @@
+package com.greenlandhk.infra.util;
+
+import com.greenlandhk.infra.validator.GenericValidator;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class StringUtil {
+	public static final String EMPTY_STRING = "";
+	public static final String ZERO_STRING = "0";
+
+	public static boolean equals(String str1, String str2) {
+		if (str1 == null) {
+			return str2 == null;
+		}
+		return str1.equals(str2);
+	}
+//忽略大小写
+	public static boolean equalsIgnoreCase(String str1, String str2) {
+		if (str1 == null) {
+			return str2 == null;
+		}
+		return str1.equalsIgnoreCase(str2);
+	}
+
+	public static boolean isBlank(String str) {
+		int length;
+		if (str == null || (length = str.length()) == 0) {
+			return true;
+		}
+		for (int i = 0; i < length; ++i) {
+			if (Character.isWhitespace(str.charAt(i)))
+				continue;
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean isNotBlank(String str) {
+		int length;
+		if (str == null || (length = str.length()) == 0) {
+			return false;
+		}
+		for (int i = 0; i < length; ++i) {
+			if (Character.isWhitespace(str.charAt(i)))
+				continue;
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
+
+	public static boolean isNotEmpty(String str) {
+		return str != null && str.length() > 0;
+	}
+//返回某个指定的字符串值在字符串中首次出现的位置。
+	public static int indexOf(String str, String searchStr) {
+		if (str == null || searchStr == null) {
+			return -1;
+		}
+		return str.indexOf(searchStr);
+	}
+
+	public static int indexOf(String str, String searchStr, int startPos) {
+		if (str == null || searchStr == null) {
+			return -1;
+		}
+		if (searchStr.length() == 0 && startPos >= str.length()) {
+			return str.length();
+		}
+		return str.indexOf(searchStr, startPos);
+	}
+//用于提取字符串中介于两个指定下标之间的字符。
+	public static String substring(String str, int start, int end) {
+		if (str == null) {
+			return null;
+		}
+		if (end < 0) {
+			end = str.length() + end;
+		}
+		if (start < 0) {
+			start = str.length() + start;
+		}
+		if (end > str.length()) {
+			end = str.length();
+		}
+		if (start > end) {
+			return "";
+		}
+		if (start < 0) {
+			start = 0;
+		}
+		if (end < 0) {
+			end = 0;
+		}
+		return str.substring(start, end);
+	}
+//是否包含
+	public static boolean contains(String str, String searchStr) {
+		if (str == null || searchStr == null) {
+			return false;
+		}
+		return str.indexOf(searchStr) >= 0;
+	}
+//测字符串是否只由数字组成，如果字符串中只包括数字，就返回Ture，否则返回False。
+	public static boolean isNumeric(String str) {
+		if (StringUtil.isBlank(str)) {
+			return false;
+		}
+		int sz = str.length();
+		for (int i = 0; i < sz; ++i) {
+			if (Character.isDigit(str.charAt(i)))
+				continue;
+			return false;
+		}
+		return true;
+	}
+
+	public static String parseString(String str, String... params) {
+		int length = params.length;
+		for (int i = 0; str.indexOf("{}") > -1 && i < length; ++i) {
+			str = str.replaceFirst("\\{}", String.valueOf(params[i]));
+		}
+		return str;
+	}
+
+	public static String firstUpperCase(CharSequence s) {
+		if (null == s) {
+			return null;
+		}
+		int len = s.length();
+		if (len == 0) {
+			return "";
+		}
+		char char0 = s.charAt(0);
+		if (Character.isUpperCase(char0)) {
+			return s.toString();
+		}
+		return new StringBuilder(len).append(Character.toUpperCase(char0)).append(s.subSequence(1, len)).toString();
+	}
+
+	public static String firstLowerCase(CharSequence s) {
+		if (null == s) {
+			return null;
+		}
+		int len = s.length();
+		if (len == 0) {
+			return "";
+		}
+		char char0 = s.charAt(0);
+		if (Character.isLowerCase(char0)) {
+			return s.toString();
+		}
+		return new StringBuilder(len).append(Character.toLowerCase(char0)).append(s.subSequence(1, len)).toString();
+	}
+//去掉字符串两端所有空格
+	public static String null2String(String str) {
+		if (null == str) {
+			return "";
+		}
+		return str.trim();
+	}
+//判断string是否是int
+	public static boolean IsNum(String str) {
+		try {
+			if (StringUtil.isNotEmpty(str) && str.length() != 6 || StringUtil.isEmpty(str)) {
+				return false;
+			}
+			Integer.valueOf(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+//验证字段是否可以被转换为有效的int类型的数据
+	public static boolean canConvertInt(String str) {
+		if (StringUtil.isNotEmpty(str) && GenericValidator.isInt((String) str)) {
+			return true;
+		}
+		return false;
+	}
+//验证字段是否可以被转换为有效的BigDecimal类型的数据
+	public static boolean canConvertBigDecimal(String str) {
+		if (StringUtil.isNotEmpty(str) && GenericValidator.isBigDecimal((String) str)) {
+			return true;
+		}
+		return false;
+	}
+//判断传入的String数据长度是否大于一个数值
+	public static boolean istooLong(String str, int len) {
+		if (str == null) {
+			return false;
+		}
+		if (str.length() >= len) {
+			return true;
+		}
+		return false;
+	}
+//返回字符串传入下标之后的字符
+	public static String subStr4Last(String str, int index) {
+		if (StringUtil.isNotEmpty(str)) {
+			return str.substring(str.length() - index, str.length());
+		}
+		return "";
+	}
+//返回字符串传入下标之前的字符
+	public static String subStr4First(String str, int index) {
+		if (StringUtil.isNotEmpty(str)) {
+			return str.substring(0, index);
+		}
+		return "";
+	}
+
+	public static String replaceStrWtithAsterisk(String originalStr, int startRetainNum, int endRetainNum) {
+		String newStr = "";
+		if (StringUtil.isNotEmpty(originalStr)) {
+			if (startRetainNum + endRetainNum > originalStr.length()) {
+				throw new IllegalArgumentException("startRetainNum plus endRetainNum is big than originalStr's length");
+			}
+			newStr = StringUtil.subStr4First(originalStr, startRetainNum)
+					.concat(StringUtil.getAsterisks(originalStr.length() - startRetainNum - endRetainNum))
+					.concat(StringUtil.subStr4Last(originalStr, endRetainNum));
+		}
+		return newStr;
+	}
+//获得*
+	public static String getAsterisks(int count) {
+		String asterisks = "";
+		if (count > 0) {
+			for (int i = 0; i < count; ++i) {
+				asterisks = asterisks.concat("*");
+			}
+		}
+		return asterisks;
+	}
+
+	public static boolean isInterger(BigDecimal dec) {
+		if (StringUtil.isEmpty(dec.toString())) {
+			return false;
+		}
+		String str = dec.toString();
+		int index = str.indexOf(".");
+		if (index == -1) {
+			return true;
+		}
+		String last = str.substring(index + 1);
+		boolean isNum = last.matches("[0]+");
+		return isNum;
+	}
+
+	public static String formatString(String msg, int length, String ch) {
+		String finalmsg = "";
+		if (msg.trim().length() > length) {
+			int index = msg.trim().length() / length == 0 ? 1 : msg.trim().length() / length;
+			for (int i = 0; i < index; ++i) {
+				finalmsg = i > 0
+						? finalmsg + msg.substring(i * length, (i + 1) * length) + ch
+						: finalmsg + msg.substring(0, length) + ch;
+			}
+		}
+		return finalmsg;
+	}
+
+	public static int compare2Zero(String str) {
+		if (StringUtil.isNotEmpty(str)) {
+			int r = new BigDecimal(str).compareTo(BigDecimal.ZERO);
+			return r;
+		}
+		return 0;
+	}
+//是否包含数字
+	public static boolean IsContainNum(String str) {
+		boolean b = false;
+		if (StringUtil.isEmpty(str)) {
+			return b;
+		}
+		for (int i = 0; i < str.length(); ++i) {
+			if (!Character.isDigit(str.charAt(i)))
+				continue;
+			b = true;
+			break;
+		}
+		return b;
+	}
+
+	public static String replaceIncorrectChar(String str) {
+        if (StringUtil.isEmpty(str)) {
+            return str;
+        }
+        char[] charArray = str.toCharArray();
+        StringBuilder sb = new StringBuilder(charArray.length);
+        for (char c : charArray) {
+            if (c == '
