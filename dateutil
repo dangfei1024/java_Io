@@ -1,0 +1,421 @@
+package com.greenlandhk.infra.util;
+
+import com.greenlandfs.infra.common.exception.BusinessException;
+import com.greenlandfs.utils.common.StringUtil;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class DateUtil {
+	public static final String FORMAT_YYYYMMDD = "yyyyMMdd";
+	public static final String FORMAT_YYYYMMDDWITHBACKSLASH = "yyyy/MM/dd";
+	public static final String FORMAT_YYYYMMDDSUB = "yyyy-MM-dd";
+	public static final String FORMAT_YYYYMMDDHHMMSS = "yyyy-MM-dd HH:mm:ss";
+	public static final String FORMAT_YYYYMMDDHHMMSSss = "yyyy-MM-dd HH:mm:ss:SS";
+
+	public static String getCurrentDateyyyyMMddHHmmssSS() {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
+		return sf.format(new Date());
+	}
+
+	public static String getCurrentDateyyyyMMddHHmmss() {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sf.format(new Date());
+	}
+
+	public static String getCurrentDateYYYYMMDD() {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+		return sf.format(new Date());
+	}
+
+	public static String getDateYYYYMMDD() {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		return sf.format(new Date());
+	}
+
+	public static Date paseDateyyyyMMddHHmmss(String strDate) throws ParseException {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = sf.parse(strDate);
+		return date;
+	}
+
+	public static Date paseDateyyyyMMddHHmmss(String strDate, String format) throws ParseException {
+		SimpleDateFormat sf = new SimpleDateFormat(format);
+		sf.setLenient(false);
+		Date date = sf.parse(strDate);
+		return date;
+	}
+
+	public static String formatDate(String strDate, String formatBefore, String formatAfter) throws ParseException {
+		if (strDate == null) {
+			return "";
+		} else {
+			SimpleDateFormat sfBefore = new SimpleDateFormat(formatBefore);
+			SimpleDateFormat sfAfter = new SimpleDateFormat(formatAfter);
+			Date date = sfBefore.parse(strDate);
+			return sfAfter.format(date);
+		}
+	}
+
+	public static String paseDateYYYYMMToDateYYYYMMDD(String time) {
+		return time.substring(0, 10).replaceAll("-", "");
+	}
+
+	public static String paseDateYYYYMMToDateYYYYMMDDHHMMSS(String time) throws ParseException {
+		SimpleDateFormat sf1 = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat sf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sf2.format(sf1.parse(time + "000000"));
+	}
+
+	public static String paseDateYYYYMMDDHHMMSS(String time) throws ParseException {
+		SimpleDateFormat sf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sf2 = new SimpleDateFormat("yyyyMMddHHmmss");
+		return sf2.format(sf1.parse(time));
+	}
+
+	public static String paseDateYYYYMMDDHHmmssToDateYYYYMMDD(String time) {
+		return time.substring(0, 10).replaceAll("-", "");
+	}
+
+	public static boolean compareDate(String strDate) throws ParseException {
+		if (StringUtil.isNotEmpty(strDate)) {
+			Date date = paseDateyyyyMMddHHmmss(strDate);
+			Date currDate = new Date();
+			if (currDate.getTime() / 1000L - date.getTime() / 1000L < 60L) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean compareDate(String strDate, int seconds) throws ParseException {
+		if (StringUtil.isNotEmpty(strDate)) {
+			Date date = paseDateyyyyMMddHHmmss(strDate);
+			Date currDate = new Date();
+			if (currDate.getTime() / 1000L - date.getTime() / 1000L < (long) seconds) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean compareInpAndCurr(String strDate) throws ParseException {
+		Date date = paseDateyyyyMMddHHmmss(strDate);
+		Date currDate = new Date();
+		return date.getTime() > currDate.getTime();
+	}
+
+	public static boolean checkInputTimeThanCurrDate(String strDate) throws ParseException {
+		Date date = paseDateyyyyMMddHHmmss(strDate);
+		Date currDate = new Date();
+		return date.getTime() < currDate.getTime();
+	}
+
+	public static boolean compareBiggerInpDates(String strDate, String strDateCompared, String format)
+			throws ParseException {
+		if (strDate != null && strDateCompared != null) {
+			Date date = paseDateyyyyMMddHHmmss(strDate, format);
+			Date dateCompared;
+			if (strDateCompared.length() == 19) {
+				dateCompared = paseDateyyyyMMddHHmmss(strDateCompared);
+			} else {
+				dateCompared = paseDateyyyyMMddHHmmss(strDateCompared, format);
+			}
+
+			return date.getTime() > dateCompared.getTime();
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean compareLesserInpDates(String strDate, String strDateCompared, String format)
+			throws ParseException {
+		if (strDate != null && strDateCompared != null) {
+			Date date = paseDateyyyyMMddHHmmss(strDate, format);
+			Date dateCompared = paseDateyyyyMMddHHmmss(strDateCompared, format);
+			return date.getTime() < dateCompared.getTime();
+		} else {
+			return false;
+		}
+	}
+
+	public static String getDateByFormat(String format, Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
+	}
+
+	public static String getDateByFormat(String format1, String format2, String strDate) {
+		try {
+			if (StringUtil.isNotEmpty(format1) && StringUtil.isNotEmpty(format2) && StringUtil.isNotEmpty(strDate)) {
+				SimpleDateFormat e = new SimpleDateFormat(format1);
+				Date date = e.parse(strDate);
+				return getDateByFormat(format2, date);
+			}
+		} catch (ParseException arg4) {
+			arg4.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static String getCurrentHHmmss() {
+		return getDateByFormat("HHmmss", new Date());
+	}
+
+	public static long getQuot(String objectDt) {
+		if (null == objectDt) {
+			return 0L;
+		} else {
+			long quot = 0L;
+			SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+
+			try {
+				Date e = new Date();
+				e = ft.parse(ft.format(e));
+				Date date2 = ft.parse(objectDt);
+				quot = (e.getTime() - date2.getTime()) / 86400000L;
+			} catch (ParseException arg5) {
+				arg5.printStackTrace();
+			}
+
+			return quot;
+		}
+	}
+
+	public static String getYearMonthDay(String str) {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+
+		try {
+			Date e = sf.parse(str);
+			if (null != e) {
+				return sf.format(e);
+			}
+		} catch (ParseException arg2) {
+			arg2.printStackTrace();
+		}
+
+		return "";
+	}
+
+	public static String converDate1(String dateStr) {
+		String string = "";
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		try {
+			if (StringUtil.isNotBlank(dateStr)) {
+				string = format1.format(format2.parse(dateStr));
+			}
+		} catch (ParseException arg4) {
+			arg4.printStackTrace();
+		}
+
+		return string;
+	}
+
+	public static String converDate2(String dateStr) {
+		String string = "";
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		try {
+			if (StringUtil.isNotBlank(dateStr)) {
+				string = format2.format(format1.parse(dateStr));
+			}
+		} catch (Exception arg4) {
+			arg4.printStackTrace();
+		}
+
+		return string;
+	}
+
+	public static Date converDate3(String dateStr) {
+		Date date = null;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		try {
+			date = format.parse(dateStr);
+		} catch (ParseException arg3) {
+			arg3.printStackTrace();
+		}
+
+		return date;
+	}
+
+	public static String getCurrentDateWeeHours() {
+		String currentDate = "";
+
+		try {
+			String e = getCurrentDateYYYYMMDD();
+			currentDate = paseDateYYYYMMToDateYYYYMMDDHHMMSS(e);
+			return currentDate;
+		} catch (Exception arg1) {
+			throw new BusinessException("获取当前日期失败");
+		}
+	}
+
+	public static String getNewDateByAddDays(String originalDate, int days, int seconds) {
+		String targetDate = "";
+
+		try {
+			Calendar e = Calendar.getInstance();
+			e.setTime(paseDateyyyyMMddHHmmss(originalDate));
+			e.add(5, days);
+			e.add(13, seconds);
+			targetDate = getDateByFormat("yyyy-MM-dd HH:mm:ss", e.getTime());
+			return targetDate;
+		} catch (Exception arg4) {
+			throw new BusinessException("获取新日期失败");
+		}
+	}
+
+	public static Integer discrepantDays(String startDate, String endDate, String format) {
+		try {
+			SimpleDateFormat e = new SimpleDateFormat(format);
+			Date beginDate = e.parse(startDate);
+			Date endDat = e.parse(endDate);
+			long begin = beginDate.getTime();
+			long end = endDat.getTime();
+			long between_days = (end - begin) / 86400000L;
+			return Integer.valueOf(String.valueOf(between_days));
+		} catch (Exception arg11) {
+			arg11.printStackTrace();
+			return null;
+		}
+	}
+
+	public static String getRedeemNextDayDate(String format) {
+		Date date = new Date();
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		calendar.add(5, 1);
+		date = calendar.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
+	}
+
+	public static boolean isValidDate(String str) {
+		boolean convertSuccess = true;
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+
+		try {
+			format.setLenient(false);
+			format.parse(str);
+		} catch (ParseException arg3) {
+			convertSuccess = false;
+		}
+
+		return convertSuccess;
+	}
+
+	public static boolean isDate(String date) {
+		String rexp = "^((\\d{2}(([02468][048])|([13579][26]))[\\-\\s]?((((0?[13578])|(1[02]))[\\-\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\s]?((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\s]?((((0?[13578])|(1[02]))[\\-\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\s]?((0?[1-9])|(1[0-9])|(2[0-8]))))))";
+		Pattern pat = Pattern.compile(rexp);
+		Matcher mat = pat.matcher(date);
+		return mat.matches();
+	}
+
+	public static Date getDateAddN(Date date, int n) {
+		if (date == null) {
+			return null;
+		} else {
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(date);
+			calendar.add(5, n);
+			return calendar.getTime();
+		}
+	}
+
+	public static String getMonthFirstDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		cDay.set(5, 1);
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+
+	public static String getMonthLastDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		cDay.set(5, cDay.getActualMaximum(5));
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+
+	public static String getSeasonFirstDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		int curMonth = cDay.get(2);
+		if (curMonth >= 0 && curMonth <= 2) {
+			cDay.set(2, 0);
+		}
+
+		if (curMonth >= 3 && curMonth <= 5) {
+			cDay.set(2, 3);
+		}
+
+		if (curMonth >= 6 && curMonth <= 8) {
+			cDay.set(2, 6);
+		}
+
+		if (curMonth >= 9 && curMonth <= 11) {
+			cDay.set(2, 9);
+		}
+
+		cDay.set(5, cDay.getActualMinimum(5));
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+
+	public static String getSeasonLastDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		int curMonth = cDay.get(2);
+		if (curMonth >= 0 && curMonth <= 2) {
+			cDay.set(2, 2);
+		}
+
+		if (curMonth >= 3 && curMonth <= 5) {
+			cDay.set(2, 5);
+		}
+
+		if (curMonth >= 6 && curMonth <= 8) {
+			cDay.set(2, 8);
+		}
+
+		if (curMonth >= 9 && curMonth <= 11) {
+			cDay.set(2, 11);
+		}
+
+		cDay.set(5, cDay.getActualMaximum(5));
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+
+	public static String getYearFirstDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		int currentYear = cDay.get(1);
+		cDay.clear();
+		cDay.set(1, currentYear);
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+
+	public static String getYearLastDay(Date date) {
+		Calendar cDay = Calendar.getInstance();
+		cDay.setTime(date);
+		int currentYear = cDay.get(1);
+		cDay.clear();
+		cDay.set(1, currentYear);
+		cDay.roll(6, -1);
+		SimpleDateFormat fomat = new SimpleDateFormat("yyyy-MM-dd");
+		return fomat.format(cDay.getTime());
+	}
+}
