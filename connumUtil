@@ -1,0 +1,167 @@
+package etrade.trans.util;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+
+import com.greenlandhk.infra.util.StringUtil;
+
+/**
+ * 
+ * 数据类型转换工具类
+ *
+ */
+public class ConverterUtils {
+
+	/**
+	 * 字符串数字转BigDecimal
+	 * 
+	 * @param num
+	 * @param decimalPlace
+	 * @param roundType
+	 * @return
+	 */
+	public static BigDecimal stringNumToBigDecimal(String num, int scale, int roundingMode) {
+		if (StringUtil.isBlank(num)) {
+			return new BigDecimal(0);
+		}
+		return new BigDecimal(num).setScale(scale, roundingMode);
+	}
+
+	/**
+	 * bigDecimal 转字符串
+	 * 
+	 * @param num
+	 * @param scale
+	 * @param roundType
+	 * @return
+	 */
+	public static String bigDecimalNumToString(BigDecimal num, int scale, int roundingMode) {
+		if (null == num) {
+			num = new BigDecimal(0);
+		}
+		return String.valueOf(num.setScale(scale, roundingMode));
+	}
+
+	/**
+	 * BigDecimal转BigDecimal
+	 * 
+	 * @param num
+	 * @param decimalPlace
+	 * @param roundType
+	 * @return
+	 */
+	public static BigDecimal BigDecimalNumToBigDecimal(BigDecimal num, int scale, int roundingMode) {
+		if (null == num) {
+			num = new BigDecimal(0);
+		}
+		return num.setScale(scale, roundingMode);
+	}
+
+	/**
+	 * BigDecimal转BigDecimal
+	 * 
+	 * @param num
+	 * @param decimalPlace
+	 * @param roundType
+	 * @return
+	 */
+	public static BigDecimal BigDecimalNumToBigDecimal(BigDecimal num, int scale, RoundingMode roundingMode) {
+		if (null == num) {
+			num = new BigDecimal(0);
+		}
+		return num.setScale(scale, roundingMode);
+	}
+
+	/**
+	 * 字符串数字转字符串
+	 * 
+	 * @param num
+	 * @param decimalPlace
+	 * @param roundType
+	 * @return
+	 */
+	public static String stringNumToString(String num, int scale, int roundType) {
+		if (StringUtil.isBlank(num)) {
+			return "0";
+		}
+		return String.valueOf(new BigDecimal(num).setScale(scale, roundType));
+	}
+
+	/**
+	 * BigDecimal 转字符串 保留2位小数
+	 * 
+	 * @param v
+	 * @return
+	 */ 
+
+	public static String bigDecimalToString(BigDecimal v) {
+		if (null == v) {
+			v = new BigDecimal(0);
+		}
+		return v.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString();
+	}
+	
+	public static BigDecimal bigDecimalToDecimal(BigDecimal v) {
+		if (null == v) {
+			v = new BigDecimal(0);
+		}
+		return v.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	
+	/**
+	 * 字符串类型的数字保留两位小数
+	 */
+	public static String stringHoldTwo(String s) {
+		return StringUtil.isNotBlank(s) ? ConverterUtils.bigDecimalToString(new BigDecimal(s)) : "0.00";
+	}
+	
+	/**
+	 * 转百分比类型
+	 */
+	public static String stringNumToPercentage(String num) {
+		String percentage = "0%";
+		if(null==num) {
+			return percentage;
+		}else {
+			percentage = new StringJoiner("").add(new BigDecimal(num).multiply(new BigDecimal(100)).stripTrailingZeros().toPlainString()).add("%").toString();
+		}
+		return percentage;
+	}
+
+	/**
+	 * String去掉 空格、回车、换行符、制表符
+	 * 
+	 * @param v
+	 * @return
+	 */
+
+	public static String backString(String v) {
+		if (StringUtil.isBlank(v)) {
+			return null;
+		}
+		Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+		Matcher m = p.matcher(v);
+		return m.replaceAll("");
+	}
+
+	/**
+	 * 只取字符串中的数字
+	 * 
+	 * @param v
+	 * @return
+	 */
+
+	public static String backNumber(String v) {
+		if (StringUtil.isBlank(v)) {
+			return null;
+		}
+		Pattern p = Pattern.compile("[^\\d]+");
+		Matcher m = p.matcher(v);
+		return m.replaceAll("");
+	}
+}
